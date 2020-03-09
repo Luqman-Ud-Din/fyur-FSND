@@ -35,12 +35,18 @@ class Venue(BaseModel):
 
     @property
     def past_shows(self):
-        return [{
-            'artist_id': show.artist.id,
-            'artist_name': show.artist.name,
-            'artist_image_link': show.artist.image_link,
-            'start_time': show.start_time.strftime(DATETIME_FORMAT)
-        } for show in Show.query.filter(Show.start_time < datetime.now(), Show.venue_id == self.id).all()]
+        return [
+            {
+                'artist_id': artist_id,
+                'artist_name': name,
+                'artist_image_link': image_link,
+                'start_time': start_time.strftime(DATETIME_FORMAT)
+            } for artist_id, name, image_link, start_time in Show.query.join(Artist).with_entities(
+                'artist_id', 'name', 'image_link', 'start_time'
+            ).filter(
+                Show.start_time < datetime.now(), Show.venue_id == self.id
+            ).all()
+        ]
 
     @property
     def upcoming_shows(self):
