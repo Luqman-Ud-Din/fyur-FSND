@@ -1,5 +1,7 @@
 from enum import Enum
 
+PHONE_REGEX = r'^\d{3}-\d{3}-\d{4}$'
+
 
 class BaseEnum(Enum):
     @classmethod

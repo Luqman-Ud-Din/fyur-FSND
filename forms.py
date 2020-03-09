@@ -4,7 +4,7 @@ from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
 from wtforms.validators import DataRequired, URL, Optional
 
-from constants import State, Genre
+from constants import State, Genre, PHONE_REGEX
 from validators import ValidatePattern
 
 
@@ -24,38 +24,45 @@ class ShowForm(Form):
 
 class VenueForm(Form):
     name = StringField(
-        'name', validators=[DataRequired()]
+        'Name',
+        validators=[DataRequired()]
     )
     city = StringField(
-        'city', validators=[DataRequired()]
+        'City',
+        validators=[DataRequired()]
     )
     state = SelectField(
-        'state', validators=[DataRequired()],
+        'State',
+        validators=[DataRequired()],
         choices=State.choices()
     )
     address = StringField(
-        'address', validators=[DataRequired()]
+        'Address',
+        validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'Phone',
+        validators=[ValidatePattern(pattern=PHONE_REGEX)],
     )
     image_link = StringField(
-        'image_link'
+        'image_link',
+        validators=[Optional(), URL()]
     )
     genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
+        'Genres',
+        validators=[DataRequired()],
         choices=Genre.choices()
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'Facebook Link',
+        validators=[Optional(), URL()]
     )
     website = StringField(
-        'website', validators=[URL()]
+        'Website',
+        validators=[Optional(), URL()]
     )
-
-    seeking_talent = BooleanField('seeking_talent')
-
-    seeking_description = StringField('seeking_description')
+    seeking_talent = BooleanField('Seeking Talent')
+    seeking_description = StringField('Seeking Description')
 
 
 class ArtistForm(Form):
@@ -74,7 +81,7 @@ class ArtistForm(Form):
     )
     phone = StringField(
         'Phone',
-        validators=[ValidatePattern(pattern=r'^\d{3}-\d{3}-\d{4}$')],
+        validators=[ValidatePattern(pattern=PHONE_REGEX)],
     )
     image_link = StringField(
         'Image Link',
