@@ -57,6 +57,13 @@ def edit_artist_submission(artist_id):
         request_data = {**request.form}
         request_data['genres'] = ','.join(request.form.getlist('genres') or [])
         request_data['seeking_venue'] = (request_data.get('seeking_venue') or '').lower() == 'y'
+
+        form = ArtistForm(**request_data)
+        if not form.validate_on_submit():
+            artist = Artist.query.filter_by(id=artist_id).first()
+            return render_template('forms/edit_artist.html', form=form, artist=artist)
+
+        request_data.pop('csrf_token', None)
         Artist.query.filter_by(id=artist_id).update(request_data)
         db.session.commit()
         flash(f'Artist {request.form["name"]} was successfully updated!')
@@ -84,6 +91,11 @@ def create_artist_submission():
         request_data = {**request.form}
         request_data['genres'] = ','.join(request.form.getlist('genres') or [])
         request_data['seeking_venue'] = (request_data.get('seeking_venue') or '').lower() == 'y'
+
+        form = ArtistForm(**request_data)
+        if not form.validate_on_submit():
+            return render_template('forms/new_artist.html', form=form)
+
         artist = Artist(**request_data)
         db.session.add(artist)
         db.session.commit()
