@@ -64,6 +64,7 @@ def edit_artist_submission(artist_id):
             return render_template('forms/edit_artist.html', form=form, artist=artist)
 
         request_data.pop('csrf_token', None)
+
         Artist.query.filter_by(id=artist_id).update(request_data)
         db.session.commit()
         flash(f'Artist {request.form["name"]} was successfully updated!')
@@ -95,6 +96,8 @@ def create_artist_submission():
         form = ArtistForm(**request_data)
         if not form.validate_on_submit():
             return render_template('forms/new_artist.html', form=form)
+
+        request_data.pop('csrf_token', None)
 
         artist = Artist(**request_data)
         db.session.add(artist)
