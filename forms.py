@@ -2,9 +2,10 @@ from datetime import datetime
 
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, URL
+from wtforms.validators import DataRequired, URL, Optional
 
 from constants import State, Genre
+from validators import ValidatePattern
 
 
 class ShowForm(Form):
@@ -59,30 +60,37 @@ class VenueForm(Form):
 
 class ArtistForm(Form):
     name = StringField(
-        'name', validators=[DataRequired()]
+        'Name',
+        validators=[DataRequired()]
     )
     city = StringField(
-        'city', validators=[DataRequired()]
+        'City',
+        validators=[DataRequired()]
     )
     state = SelectField(
-        'state', validators=[DataRequired()],
+        'State',
+        validators=[DataRequired()],
         choices=State.choices()
     )
     phone = StringField(
-        'phone'
+        'Phone',
+        validators=[ValidatePattern(pattern=r'^\d{3}-\d{3}-\d{4}$')],
     )
     image_link = StringField(
-        'image_link'
+        'Image Link',
+        validators=[Optional(), URL()]
     )
     genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
+        'Genres',
+        validators=[DataRequired()],
         choices=Genre.choices()
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'Facebook Link',
+        validators=[Optional(), URL()]
     )
     website = StringField(
-        'website', validators=[URL()]
+        'Website', validators=[Optional(), URL()]
     )
-    seeking_venue = BooleanField('seeking_venue')
-    seeking_description = StringField('seeking_description')
+    seeking_venue = BooleanField('Seeking Venue')
+    seeking_description = StringField('Seeking Description')
