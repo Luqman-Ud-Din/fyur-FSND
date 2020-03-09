@@ -17,7 +17,7 @@ def venues():
         }
         data.append(d)
 
-    return render_template('pages/venues.html', areas=data);
+    return render_template('pages/venues.html', areas=data)
 
 
 @app.route('/venues/search', methods=['POST'])
@@ -59,6 +59,12 @@ def create_venue_submission():
         request_data = {**request.form}
         request_data['genres'] = ','.join(request.form.getlist('genres') or [])
         request_data['seeking_talent'] = (request_data.get('seeking_talent') or '').lower() == 'y'
+
+        form = VenueForm(**request_data)
+        if not form.validate_on_submit():
+            return render_template('forms/new_venue.html', form=form)
+
+        request_data.pop('csrf_token', None)
         venue = Venue(**request_data)
         db.session.add(venue)
         db.session.commit()
@@ -91,6 +97,14 @@ def edit_venue_submission(venue_id):
         request_data = {**request.form}
         request_data['genres'] = ','.join(request.form.getlist('genres') or [])
         request_data['seeking_talent'] = (request_data.get('seeking_talent') or '').lower() == 'y'
+
+        form = VenueForm(**request_data)
+        if not form.validate_on_submit():
+            venue = Venue.query.filter_by(id=venue_id).first()
+            return render_template('forms/edit_venue.html', form=form, venue=venue)
+
+        request_data.pop('csrf_token', None)
+
         Venue.query.filter_by(id=venue_id).update(request_data)
         db.session.commit()
         flash('Venue ' + request.form['name'] + ' was successfully updated!')
